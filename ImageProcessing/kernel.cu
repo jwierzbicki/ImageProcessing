@@ -154,7 +154,10 @@ extern "C" _declspec(dllexport) void __cdecl BlurImage(uint8_t *inputImage, uint
 
 	// Grid/Block/Thread configuration
 	dim3 dimBlock(16, 16);
-	dim3 dimGrid(1, 1);
+	int blockSize = 16 * 16;
+	int numBlocks = (pixelCount + blockSize - 1) / blockSize;
+	int blockGridDim = sqrt(numBlocks);
+	dim3 dimGrid(blockGridDim + 1, blockGridDim + 1);
 
 	// Call CUDA kernels
 	blurBlue<<<dimGrid, dimBlock>>>(x, y, maskArr, imageHeight, imageWidth);
