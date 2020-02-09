@@ -1,0 +1,70 @@
+﻿<Window x:Class="GUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GUI"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Image Grid.Column="0"
+               Grid.RowSpan="10"
+               x:Name="MainImage"/>
+        <Button Grid.Column="1"
+                Grid.Row="0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="15,2"
+                x:Name="btnRemoveRed"
+                Click="BtnRemoveRed_Click">
+            Remove Red
+        </Button>
+        <Button Grid.Column="1"
+                Grid.Row="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="15,2"
+                x:Name="btnRemoveGreen"
+                Click="BtnRemoveGreen_Click">
+            Remove Green
+        </Button>
+        <Button Grid.Column="1"
+                Grid.Row="2"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="15,2"
+                x:Name="btnRemoveBlue"
+                Click="BtnRemoveBlue_Click">
+            Remove Blue
+        </Button>
+        <Button Grid.Column="1"
+                Grid.Row="3"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="15,2"
+                x:Name="btnBlur"
+                Click="BtnBlur_Click">
+            Blur
+        </Button>
+        <Button Grid.Column="1"
+                Grid.Row="4"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="15,2"
+                x:Name="btnUndo"
+                Click="BtnUndo_Click">
+            Undo
+        </Button>
+    </Grid>
+</Window>
