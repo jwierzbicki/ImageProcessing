@@ -1,2 +1,5 @@
 GUI/obj
 .vs
+GUI/bin
+x64
+ImageProcessing/x64
