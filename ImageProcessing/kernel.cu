@@ -59,19 +59,14 @@ __global__ void blurBlue(Pixel *input, Pixel *output, float *mask, int height, i
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-	// Check boundaries
-	if (row <= 0 || row >= height - 1 || col <= 0 || col >= width -1)
-	{
-		return;
-	}
-
 	int sumBlue = 0;
 
 	for (int k = -1; k <= 1; k++)
 	{
 		for (int j = -1; j <= 1; j++)
 		{
-			sumBlue += mask[(k + 1) * 3 + j + 1] * input[(row - k) * width + (col + j)].Blue;
+			if (row - k >= 0 && col + j >= 0)
+				sumBlue += mask[(k + 1) * 3 + j + 1] * input[(row - k) * width + (col + j)].Blue;
 		}
 	}
 
@@ -83,19 +78,14 @@ __global__ void blurGreen(Pixel *input, Pixel *output, float *mask, int height, 
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-	// Check boundaries
-	if (row <= 0 || row >= height - 1 || col <= 0 || col >= width - 1)
-	{
-		return;
-	}
-
 	int sumGreen = 0;
 
 	for (int k = -1; k <= 1; k++)
 	{
 		for (int j = -1; j <= 1; j++)
 		{
-			sumGreen += mask[(k + 1) * 3 + j + 1] * input[(row - k) * width + (col + j)].Green;
+			if (row - k >= 0 && col + j >= 0)
+				sumGreen += mask[(k + 1) * 3 + j + 1] * input[(row - k) * width + (col + j)].Green;
 		}
 	}
 
@@ -107,19 +97,14 @@ __global__ void blurRed(Pixel *input, Pixel *output, float *mask, int height, in
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-	// Check boundaries
-	if (row <= 0 || row >= height - 1 || col <= 0 || col >= width - 1)
-	{
-		return;
-	}
-
 	int sumRed = 0;
 
 	for (int k = -1; k <= 1; k++)
 	{
 		for (int j = -1; j <= 1; j++)
 		{
-			sumRed += mask[(k + 1) * 3 + j + 1] * input[(row - k) * width + (col + j)].Red;
+			if(row - k >= 0 && col + j >= 0)
+				sumRed += mask[(k + 1) * 3 + j + 1] * input[(row - k) * width + (col + j)].Red;
 		}
 	}
 
