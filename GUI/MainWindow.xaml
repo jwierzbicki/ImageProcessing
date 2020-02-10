@@ -57,14 +57,20 @@
                 Click="BtnBlur_Click">
             Blur
         </Button>
-        <Button Grid.Column="1"
-                Grid.Row="4"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Padding="15,2"
-                x:Name="btnUndo"
-                Click="BtnUndo_Click">
-            Undo
-        </Button>
+        <StackPanel
+            Grid.Column="1"
+            Grid.Row="4"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+            <Button
+                    Padding="15,2"
+                    x:Name="btnUndo"
+                    Click="BtnUndo_Click">
+                Undo
+            </Button>
+            <Label
+                x:Name="UndoLeftLabel"
+                Content="0"/>
+        </StackPanel>
     </Grid>
 </Window>

@@ -17,6 +17,8 @@ namespace GUI
     {
         public List<MyImage> Images { get; set; }
 
+        public int UndoLeft { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -65,16 +67,19 @@ namespace GUI
         private void BtnRemoveRed_Click(object sender, RoutedEventArgs e)
         {
             RemoveColorFromImage(Color.Red);
+            UndoLeftLabel.Content = ++UndoLeft;
         }
 
         private void BtnRemoveGreen_Click(object sender, RoutedEventArgs e)
         {
             RemoveColorFromImage(Color.Green);
+            UndoLeftLabel.Content = ++UndoLeft;
         }
 
         private void BtnRemoveBlue_Click(object sender, RoutedEventArgs e)
         {
             RemoveColorFromImage(Color.Blue);
+            UndoLeftLabel.Content = ++UndoLeft;
         }
 
         private void BtnBlur_Click(object sender, RoutedEventArgs e)
@@ -105,6 +110,7 @@ namespace GUI
 
             // Set image source
             MainImage.Source = Converters.BitmapToBitmapSource(newImage.Bitmap);
+            UndoLeftLabel.Content = ++UndoLeft;
         }
 
         private void BtnUndo_Click(object sender, RoutedEventArgs e)
@@ -116,6 +122,8 @@ namespace GUI
 
                 // Set one before last as current image
                 MainImage.Source = Converters.BitmapToBitmapSource(Images.Last().Bitmap);
+
+                UndoLeftLabel.Content = --UndoLeft;
             }
         }
 
