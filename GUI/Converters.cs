@@ -129,6 +129,16 @@ namespace GUI
             }
         }
 
+        public static Bitmap ConvertTo24bpp(Bitmap orig)
+        {
+            var bmp24 = new Bitmap(orig.Width, orig.Height, PixelFormat.Format24bppRgb);
+            using (var gr = Graphics.FromImage(bmp24))
+            {
+                gr.DrawImage(orig, new Rectangle(0, 0, bmp24.Width, bmp24.Height));
+            }
+
+            return bmp24;
+        }
 
         [DllImport("gdi32.dll")]
         private static extern bool DeleteObject(IntPtr hObject);
