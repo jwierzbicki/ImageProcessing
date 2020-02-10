@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -125,6 +126,27 @@ namespace GUI
 
                 UndoLeftLabel.Content = --UndoLeft;
             }
+        }
+
+        private void OpenFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            //dlg.DefaultExt = ".bmp";
+            dlg.Filter = "Image Files (*.jpg;*.jpeg;*.png;*.bmp;*.gif)|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All Files (*.*)|*.*";
+            bool? result = dlg.ShowDialog();
+            if(result == false)
+            {
+                return;
+            }
+
+            string fileName = dlg.FileName;
+
+            var image = new MyImage();
+            image.Bitmap = Converters.ConvertTo24bpp(new Bitmap(Image.FromFile(fileName)));
+            image.Bytes = Converters.BitmapToByteArray(image.Bitmap);
+            Images.Clear();
+            Images.Add(image);
+            MainImage.Source = Converters.BitmapToBitmapSource(image.Bitmap);
         }
 
         [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
