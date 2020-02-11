@@ -111,6 +111,54 @@ __global__ void blurRed(Pixel *input, Pixel *output, float *mask, int height, in
 	output[row * width + col].Red = sumRed;
 }
 
+__global__ void convertToGrayscale(Pixel *input, Pixel *output, int height, int width)
+{
+	int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+	// Calculate colors
+	int red = input[index].Red;
+	int green = input[index].Green;
+	int blue = input[index].Blue;
+	int color = red * 0.3f + green * 0.59f + blue * 0.11f;
+
+	// Set all three colors to the same value
+	output[index].Red = color;
+	output[index].Blue = color;
+	output[index].Green = color;
+}
+
+extern "C" _declspec(dllexport) void __cdecl ConvertImageToGrayscale(uint8_t *inputImage, uint8_t *outputImage, int length, int imageHeight, int imageWidth, int bytesPerPixel)
+{
+	int pixelCount = length / bytesPerPixel;
+	Pixel *arr = new Pixel[pixelCount];
+	Pixel *outputArr = new Pixel[pixelCount];
+	memset(outputArr, 0, pixelCount * sizeof(Pixel));
+
+	// Parse byte array data into pixel array
+	ParseByteArrayToPixelArray(arr, inputImage, length, bytesPerPixel);
+
+	// Allocate device memory, copy array to device memory
+	Pixel *x, *y;
+	cudaMallocManaged(&x, pixelCount * sizeof(Pixel));
+	cudaMallocManaged(&y, pixelCount * sizeof(Pixel));
+	cudaMemcpy(x, arr, pixelCount * sizeof(Pixel), cudaMemcpyHostToDevice);
+
+	// Grid/Block/Thread configuration
+	int blockSize = 256;
+	int numBlocks = (pixelCount + blockSize - 1) / blockSize;
+
+	convertToGrayscale<<<numBlocks, blockSize>>>(x, y, imageHeight, imageWidth);
+
+	cudaMemcpy(outputArr, y, pixelCount * sizeof(Pixel), cudaMemcpyDeviceToHost);
+
+	ParsePixelArrayToByteArray(outputArr, outputImage, length, bytesPerPixel);
+
+	cudaFree(x);
+	cudaFree(y);
+	delete[] arr;
+	delete[] outputArr;
+}
+
 extern "C" _declspec(dllexport) void __cdecl BlurImage(uint8_t *inputImage, uint8_t *outputImage, int length, int imageHeight, int imageWidth, int bytesPerPixel)
 {
 	int pixelCount = length / bytesPerPixel;
