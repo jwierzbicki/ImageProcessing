@@ -140,6 +140,14 @@ namespace GUI
             return bmp24;
         }
 
+        public static void CopyBytesIntoBitmap(MyImage img)
+        {
+            BitmapData bmData = img.Bitmap.LockBits(new Rectangle(0, 0, img.Bitmap.Width, img.Bitmap.Height), ImageLockMode.ReadWrite, img.Bitmap.PixelFormat);
+            IntPtr pNative = bmData.Scan0;
+            Marshal.Copy(img.Bytes, 0, pNative, img.Bytes.Length);
+            img.Bitmap.UnlockBits(bmData);
+        }
+
         [DllImport("gdi32.dll")]
         private static extern bool DeleteObject(IntPtr hObject);
     }
