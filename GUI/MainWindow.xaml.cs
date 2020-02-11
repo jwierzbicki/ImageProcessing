@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -114,6 +115,37 @@ namespace GUI
             UndoLeftLabel.Content = ++UndoLeft;
         }
 
+        private void BtnGrayscale_Click(object sender, RoutedEventArgs e)
+        {
+            // Create new image
+            var newImage = (MyImage)Images.Last().Clone();
+
+            // Allocate memory via Marshal
+            IntPtr inputArray = Marshal.AllocHGlobal(newImage.DataLength);
+            IntPtr outputArray = Marshal.AllocHGlobal(newImage.DataLength);
+            // Copy input data
+            Marshal.Copy(newImage.Bytes, newImage.DataOffset, inputArray, newImage.DataLength);
+            // Clear output array
+            RtlZeroMemory(outputArray, new UIntPtr((uint)newImage.DataLength));
+
+            // Do C/C++ operation
+            ConvertImageToGrayscale(inputArray, outputArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel);
+
+            // Copy back
+            Marshal.Copy(outputArray, newImage.Bytes, newImage.DataOffset, newImage.DataLength);
+            // Free memory
+            Marshal.FreeHGlobal(inputArray);
+            Marshal.FreeHGlobal(outputArray);
+
+            newImage.Bitmap = Converters.ByteArrayToBitmap(newImage.Bytes);
+
+            Images.Add(newImage);
+
+            // Set image source
+            MainImage.Source = Converters.BitmapToBitmapSource(newImage.Bitmap);
+            UndoLeftLabel.Content = ++UndoLeft;
+        }
+
         private void BtnUndo_Click(object sender, RoutedEventArgs e)
         {
             if(Images.Count > 1)
@@ -131,7 +163,6 @@ namespace GUI
         private void OpenFileButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
-            //dlg.DefaultExt = ".bmp";
             dlg.Filter = "Image Files (*.jpg;*.jpeg;*.png;*.bmp;*.gif)|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All Files (*.*)|*.*";
             bool? result = dlg.ShowDialog();
             if(result == false)
@@ -154,6 +185,9 @@ namespace GUI
 
         [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
         private extern static void BlurImage(IntPtr inputImage, IntPtr outputImage, int length, int imageHeight, int imageWidth, int bytesPerPixel);
+
+        [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
+        private extern static void ConvertImageToGrayscale(IntPtr inputImage, IntPtr outputGrayscale, int length, int imageHeight, int imageWidth, int bytesPerPixel);
 
         [DllImport("kernel32.dll")]
         static extern void RtlZeroMemory(IntPtr dst, UIntPtr length);
