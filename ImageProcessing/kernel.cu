@@ -198,9 +198,6 @@ extern "C" _declspec(dllexport) void __cdecl BlurImage(uint8_t *inputImage, uint
 	blurGreen<<<dimGrid, dimBlock>>>(x, y, maskArr, imageHeight, imageWidth);
 	blurRed<<<dimGrid, dimBlock>>>(x, y, maskArr, imageHeight, imageWidth);
 
-	// Wait for CUDA to finish
-	//cudaDeviceSynchronize(); // not needed
-
 	// Copy calculated data back to host memory
 	cudaMemcpy(outputArr, y, pixelCount * sizeof(Pixel), cudaMemcpyDeviceToHost);
 
@@ -244,9 +241,6 @@ extern "C" _declspec(dllexport) void __cdecl RemoveColorFromImage(uint8_t *image
 		setRed<<<numBlocks, blockSize>>>(x, pixelCount);
 		break;
 	}
-
-	// Wait for CUDA to finish
-	cudaDeviceSynchronize();
 
 	// Copy calculated data back to host memory
 	cudaMemcpy(arr, x, pixelCount * sizeof(Pixel), cudaMemcpyDeviceToHost);
