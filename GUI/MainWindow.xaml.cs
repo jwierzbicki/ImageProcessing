@@ -160,7 +160,7 @@ namespace GUI
             RtlZeroMemory(outputArray, new UIntPtr((uint)newImage.DataLength));
 
             // Do C/C++ operation
-            ThresholdImage(inputArray, outputArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel);
+            ThresholdImage(inputArray, outputArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel, 2);
 
             // Copy back
             Marshal.Copy(outputArray, newImage.Bytes, newImage.DataOffset, newImage.DataLength);
@@ -221,7 +221,7 @@ namespace GUI
         private extern static void ConvertImageToGrayscale(IntPtr inputImage, IntPtr outputGrayscale, int length, int imageHeight, int imageWidth, int bytesPerPixel);
 
         [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
-        private extern static void ThresholdImage(IntPtr inputImage, IntPtr outputGrayscale, int length, int imageHeight, int imageWidth, int bytesPerPixel);
+        private extern static void ThresholdImage(IntPtr inputImage, IntPtr outputGrayscale, int length, int imageHeight, int imageWidth, int bytesPerPixel, int parts = 2);
 
         [DllImport("kernel32.dll")]
         static extern void RtlZeroMemory(IntPtr dst, UIntPtr length);

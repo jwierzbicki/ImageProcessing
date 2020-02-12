@@ -127,13 +127,13 @@ __global__ void convertToGrayscale(Pixel *input, Pixel *output, int height, int 
 	output[index].Green = color;
 }
 
-__global__ void threshold(Pixel *input, Pixel *output, int height, int width)
+__global__ void thresholdHalf(Pixel *input, Pixel *output, int height, int width)
 {
 	int index = blockIdx.x * blockDim.x + threadIdx.x;
 
-	if (output[index].Red <= 127)
+	if (input[index].Green <= (UCHAR_MAX >> 1))
 	{
-		output[index].Red = output[index].Green = output[index].Blue = 0x00;
+		output[index].Red =	output[index].Green = output[index].Blue = 0x00;
 	}
 	else
 	{
@@ -141,7 +141,25 @@ __global__ void threshold(Pixel *input, Pixel *output, int height, int width)
 	}
 }
 
-extern "C" _declspec(dllexport) void __cdecl ThresholdImage(uint8_t *inputImage, uint8_t *outputImage, int length, int imageHeight, int imageWidth, int bytesPerPixel)
+__global__ void thresholdThird(Pixel *input, Pixel *output, int height, int width)
+{
+	int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (input[index].Green <= 85)
+	{
+		output[index].Red = output[index].Green = output[index].Blue = 0x00;
+	}
+	else if (input[index].Green <= 170)
+	{
+		output[index].Red = output[index].Green = output[index].Blue = 0x7F;
+	}
+	else
+	{
+		output[index].Red = output[index].Green = output[index].Blue = 0xFF;
+	}
+}
+
+extern "C" _declspec(dllexport) void __cdecl ThresholdImage(uint8_t *inputImage, uint8_t *outputImage, int length, int imageHeight, int imageWidth, int bytesPerPixel, int parts)
 {
 	int pixelCount = length / bytesPerPixel;
 	Pixel *arr = new Pixel[pixelCount];
@@ -167,7 +185,15 @@ extern "C" _declspec(dllexport) void __cdecl ThresholdImage(uint8_t *inputImage,
 	convertToGrayscale<<<numBlocks, blockSize>>>(x, y, imageHeight, imageWidth);
 
 	// Then threshold the image
-	threshold<<<numBlocks, blockSize>>>(y, z, imageHeight, imageWidth);
+	switch (parts)
+	{
+	case 2:
+		thresholdHalf<<<numBlocks, blockSize>>>(y, z, imageHeight, imageWidth);
+		break;
+	case 3:
+		thresholdThird<<<numBlocks, blockSize>>>(y, z, imageHeight, imageWidth);
+		break;
+	}
 
 	// Copy data to pixel array
 	cudaMemcpy(outputArr, z, pixelCount * sizeof(Pixel), cudaMemcpyDeviceToHost);
