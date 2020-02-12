@@ -146,6 +146,37 @@ namespace GUI
             UndoLeftLabel.Content = ++UndoLeft;
         }
 
+        private void BtnThreshold_Click(object sender, RoutedEventArgs e)
+        {
+            // Create new image
+            var newImage = (MyImage)Images.Last().Clone();
+
+            // Allocate memory via Marshal
+            IntPtr inputArray = Marshal.AllocHGlobal(newImage.DataLength);
+            IntPtr outputArray = Marshal.AllocHGlobal(newImage.DataLength);
+            // Copy input data
+            Marshal.Copy(newImage.Bytes, newImage.DataOffset, inputArray, newImage.DataLength);
+            // Clear output array
+            RtlZeroMemory(outputArray, new UIntPtr((uint)newImage.DataLength));
+
+            // Do C/C++ operation
+            ThresholdImage(inputArray, outputArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel);
+
+            // Copy back
+            Marshal.Copy(outputArray, newImage.Bytes, newImage.DataOffset, newImage.DataLength);
+            // Free memory
+            Marshal.FreeHGlobal(inputArray);
+            Marshal.FreeHGlobal(outputArray);
+
+            newImage.Bitmap = Converters.ByteArrayToBitmap(newImage.Bytes);
+
+            Images.Add(newImage);
+
+            // Set image source
+            MainImage.Source = Converters.BitmapToBitmapSource(newImage.Bitmap);
+            UndoLeftLabel.Content = ++UndoLeft;
+        }
+
         private void BtnUndo_Click(object sender, RoutedEventArgs e)
         {
             if(Images.Count > 1)
@@ -188,6 +219,9 @@ namespace GUI
 
         [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
         private extern static void ConvertImageToGrayscale(IntPtr inputImage, IntPtr outputGrayscale, int length, int imageHeight, int imageWidth, int bytesPerPixel);
+
+        [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
+        private extern static void ThresholdImage(IntPtr inputImage, IntPtr outputGrayscale, int length, int imageHeight, int imageWidth, int bytesPerPixel);
 
         [DllImport("kernel32.dll")]
         static extern void RtlZeroMemory(IntPtr dst, UIntPtr length);
