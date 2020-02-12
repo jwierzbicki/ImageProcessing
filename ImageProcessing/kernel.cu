@@ -127,6 +127,61 @@ __global__ void convertToGrayscale(Pixel *input, Pixel *output, int height, int 
 	output[index].Green = color;
 }
 
+__global__ void threshold(Pixel *input, Pixel *output, int height, int width)
+{
+	int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (output[index].Red <= 127)
+	{
+		output[index].Red = output[index].Green = output[index].Blue = 0x00;
+	}
+	else
+	{
+		output[index].Red = output[index].Green = output[index].Blue = 0xFF;
+	}
+}
+
+extern "C" _declspec(dllexport) void __cdecl ThresholdImage(uint8_t *inputImage, uint8_t *outputImage, int length, int imageHeight, int imageWidth, int bytesPerPixel)
+{
+	int pixelCount = length / bytesPerPixel;
+	Pixel *arr = new Pixel[pixelCount];
+	Pixel *outputArr = new Pixel[pixelCount];
+	memset(outputArr, 0, pixelCount * sizeof(Pixel));
+
+	// Parse byte array data into pixel array
+	ParseByteArrayToPixelArray(arr, inputImage, length, bytesPerPixel);
+
+	// Allocate device memory
+	Pixel *x, *y, *z;
+	cudaMallocManaged(&x, pixelCount * sizeof(Pixel));
+	cudaMallocManaged(&y, pixelCount * sizeof(Pixel));
+	cudaMallocManaged(&z, pixelCount * sizeof(Pixel));
+	// Copy array to device memory
+	cudaMemcpy(x, arr, pixelCount * sizeof(Pixel), cudaMemcpyHostToDevice);
+
+	// Grid/Block/Thread configuration
+	int blockSize = 256;
+	int numBlocks = (pixelCount + blockSize - 1) / blockSize;
+
+	// First convert to grayscale
+	convertToGrayscale<<<numBlocks, blockSize>>>(x, y, imageHeight, imageWidth);
+
+	// Then threshold the image
+	threshold<<<numBlocks, blockSize>>>(y, z, imageHeight, imageWidth);
+
+	// Copy data to pixel array
+	cudaMemcpy(outputArr, z, pixelCount * sizeof(Pixel), cudaMemcpyDeviceToHost);
+
+	ParsePixelArrayToByteArray(outputArr, outputImage, length, bytesPerPixel);
+
+	// Free memory
+	cudaFree(x);
+	cudaFree(y);
+	cudaFree(z);
+	delete[] arr;
+	delete[] outputArr;
+}
+
 extern "C" _declspec(dllexport) void __cdecl ConvertImageToGrayscale(uint8_t *inputImage, uint8_t *outputImage, int length, int imageHeight, int imageWidth, int bytesPerPixel)
 {
 	int pixelCount = length / bytesPerPixel;
