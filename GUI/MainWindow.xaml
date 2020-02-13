@@ -68,15 +68,25 @@
                 Click="BtnGrayscale_Click">
             Grayscale
         </Button>
-        <Button Grid.Column="1"
+        <StackPanel
+                Grid.Column="1"
                 Grid.Row="5"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Center"
+                VerticalAlignment="Center">
+            <Button
                 Padding="15,2"
                 x:Name="btnThreshold"
                 Click="BtnThreshold_Click">
-            Threshold
-        </Button>
+                Threshold
+            </Button>
+            <ComboBox
+                x:Name="ThresholdComboBox"
+                Width="120">
+                <ComboBoxItem IsSelected="True">2</ComboBoxItem>
+                <ComboBoxItem>3</ComboBoxItem>
+                <ComboBoxItem>4</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
         <StackPanel
             Grid.Column="1"
             Grid.Row="6"

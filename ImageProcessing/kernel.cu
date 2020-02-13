@@ -159,6 +159,28 @@ __global__ void thresholdThird(Pixel *input, Pixel *output, int height, int widt
 	}
 }
 
+__global__ void thresholdFourth(Pixel *input, Pixel *output, int height, int width)
+{
+	int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (input[index].Green <= 63)
+	{
+		output[index].Red = output[index].Green = output[index].Blue = 0x00;
+	}
+	else if (input[index].Green <= 127)
+	{
+		output[index].Red = output[index].Green = output[index].Blue = 0x3F;
+	}
+	else if (input[index].Green <= 189)
+	{
+		output[index].Red = output[index].Green = output[index].Blue = 0x7F;
+	}
+	else
+	{
+		output[index].Red = output[index].Green = output[index].Blue = 0xFF;
+	}
+}
+
 extern "C" _declspec(dllexport) void __cdecl ThresholdImage(uint8_t *inputImage, uint8_t *outputImage, int length, int imageHeight, int imageWidth, int bytesPerPixel, int parts)
 {
 	int pixelCount = length / bytesPerPixel;
@@ -193,6 +215,8 @@ extern "C" _declspec(dllexport) void __cdecl ThresholdImage(uint8_t *inputImage,
 	case 3:
 		thresholdThird<<<numBlocks, blockSize>>>(y, z, imageHeight, imageWidth);
 		break;
+	case 4:
+		thresholdFourth<<<numBlocks, blockSize>>>(y, z, imageHeight, imageWidth);
 	}
 
 	// Copy data to pixel array

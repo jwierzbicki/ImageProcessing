@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace GUI
 {
@@ -160,7 +161,8 @@ namespace GUI
             RtlZeroMemory(outputArray, new UIntPtr((uint)newImage.DataLength));
 
             // Do C/C++ operation
-            ThresholdImage(inputArray, outputArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel, 2);
+            int parts = int.Parse(((ComboBoxItem)ThresholdComboBox.SelectedItem).Content.ToString());
+            ThresholdImage(inputArray, outputArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel, parts);
 
             // Copy back
             Marshal.Copy(outputArray, newImage.Bytes, newImage.DataOffset, newImage.DataLength);
@@ -204,7 +206,7 @@ namespace GUI
             string fileName = dlg.FileName;
 
             var image = new MyImage();
-            image.Bitmap = Converters.ConvertTo24bpp(new Bitmap(Image.FromFile(fileName)));
+            image.Bitmap = Converters.ConvertTo24bpp(new Bitmap(System.Drawing.Image.FromFile(fileName)));
             image.Bytes = Converters.BitmapToByteArray(image.Bitmap);
             Images.Clear();
             Images.Add(image);
