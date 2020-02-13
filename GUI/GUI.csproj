@@ -14,4 +14,15 @@
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="Icons/filter.ico" />
+    <Resource Include="Icons/grayscale.ico" />
+    <Resource Include="Icons/openFile.ico" />
+    <Resource Include="Icons/removeBlue.ico" />
+    <Resource Include="Icons/removeGreen.ico" />
+    <Resource Include="Icons/removeRed.ico" />
+    <Resource Include="Icons/thresholding.ico" />
+    <Resource Include="Icons/undo.ico" />
+  </ItemGroup>
+
 </Project>

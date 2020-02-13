@@ -5,123 +5,116 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GUI"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="4*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Image Grid.Column="0"
-               Grid.RowSpan="10"
+        Title="Image Processing" Height="700" Width="1000">
+    <DockPanel>
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <Button
+                    x:Name="OpenFileButton"
+                    Click="OpenFileButton_Click">
+                    <!--Open File-->
+                    <Image Source="Icons/openFile.ico"
+                           Width="32"
+                           Height="32"/>
+                </Button>
+                <Button x:Name="btnUndo"
+                        Click="BtnUndo_Click">
+                    <!--Undo-->
+                    <Image Source="Icons/undo.ico"
+                           Width="32"
+                           Height="32"/>
+                </Button>
+                <Label x:Name="UndoLeftLabel"
+                       Content="0"
+                       FontSize="19"
+                       VerticalAlignment="Center"/>
+                <DockPanel Margin="10,0">
+                    <Label DockPanel.Dock="Top"
+                           HorizontalAlignment="Center">
+                        Remove color:
+                    </Label>
+                    <Button x:Name="btnRemoveRed"
+                            Click="BtnRemoveRed_Click">
+                        <!--Remove Red-->
+                        <Image Source="Icons/removeRed.ico"
+                               Width="32"
+                               Height="32"/>
+                    </Button>
+                    <Button x:Name="btnRemoveGreen"
+                            Click="BtnRemoveGreen_Click">
+                        <!--Remove Green-->
+                        <Image Source="Icons/removeGreen.ico"
+                               Width="32"
+                               Height="32"/>
+                    </Button>
+                    <Button x:Name="btnRemoveBlue"
+                            Click="BtnRemoveBlue_Click">
+                        <!--Remove Blue-->
+                        <Image Source="Icons/removeBlue.ico"
+                               Width="32"
+                               Height="32"/>
+                    </Button>
+                </DockPanel>
+                <DockPanel Margin="10,0">
+                    <Button x:Name="btnFilter"
+                            DockPanel.Dock="Left"
+                            Click="BtnFilter_Click"
+                            Height="32">
+                        <Image Source="Icons/filter.ico"
+                           Width="32"
+                           Height="32"/>
+                    </Button>
+                    <Label DockPanel.Dock="Top"
+                           HorizontalAlignment="Center">
+                        Filter using kernel:
+                    </Label>
+                    <ComboBox x:Name="FilterComboBox"
+                              DockPanel.Dock="Bottom"
+                              Margin="0,10"
+                            Width="120">
+                        <ComboBoxItem IsSelected="True">EdgeDetection1</ComboBoxItem>
+                        <ComboBoxItem>EdgeDetection2</ComboBoxItem>
+                        <ComboBoxItem>EdgeDetection3</ComboBoxItem>
+                        <ComboBoxItem>Sharpen</ComboBoxItem>
+                        <ComboBoxItem>BoxBlur</ComboBoxItem>
+                        <ComboBoxItem>GaussianBlur</ComboBoxItem>
+                    </ComboBox>
+                </DockPanel>
+                <Button x:Name="btnGrayscale"
+                        Margin="10,0"
+                        Click="BtnGrayscale_Click">
+                    <!--Grayscale-->
+                    <Image Source="Icons/grayscale.ico"
+                           Width="32"
+                           Height="32"/>
+                </Button>
+                <DockPanel Margin="10,0">
+                    <Button x:Name="btnThreshold"
+                            DockPanel.Dock="Left"
+                            Click="BtnThreshold_Click"
+                            Height="32">
+                        <Image Source="Icons/thresholding.ico"
+                           Width="32"
+                           Height="32"/>
+                    </Button>
+                    <Label DockPanel.Dock="Top"
+                           HorizontalAlignment="Center">
+                        Threshold using levels:
+                    </Label>
+                    <ComboBox x:Name="ThresholdComboBox"
+                              DockPanel.Dock="Bottom"
+                              Margin="0,10"
+                            Width="120">
+                        <ComboBoxItem IsSelected="True">2</ComboBoxItem>
+                        <ComboBoxItem>3</ComboBoxItem>
+                        <ComboBoxItem>4</ComboBoxItem>
+                    </ComboBox>
+                </DockPanel>
+            </ToolBar>
+        </ToolBarTray>
+        <Image Grid.Row="1"
+               Grid.ColumnSpan="100"
                x:Name="MainImage"/>
-        <Button Grid.Column="1"
-                Grid.Row="0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Padding="15,2"
-                x:Name="btnRemoveRed"
-                Click="BtnRemoveRed_Click">
-            Remove Red
-        </Button>
-        <Button Grid.Column="1"
-                Grid.Row="1"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Padding="15,2"
-                x:Name="btnRemoveGreen"
-                Click="BtnRemoveGreen_Click">
-            Remove Green
-        </Button>
-        <Button Grid.Column="1"
-                Grid.Row="2"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Padding="15,2"
-                x:Name="btnRemoveBlue"
-                Click="BtnRemoveBlue_Click">
-            Remove Blue
-        </Button>
-        <StackPanel
-                Grid.Column="1"
-                Grid.Row="3"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-            <Button
-                Padding="15,2"
-                x:Name="btnFilter"
-                Click="BtnFilter_Click">
-                Filter using kernel
-            </Button>
-            <ComboBox
-                x:Name="FilterComboBox"
-                Width="120">
-                <ComboBoxItem IsSelected="True">EdgeDetection1</ComboBoxItem>
-                <ComboBoxItem>EdgeDetection2</ComboBoxItem>
-                <ComboBoxItem>EdgeDetection3</ComboBoxItem>
-                <ComboBoxItem>Sharpen</ComboBoxItem>
-                <ComboBoxItem>BoxBlur</ComboBoxItem>
-                <ComboBoxItem>GaussianBlur</ComboBoxItem>
-            </ComboBox>
-        </StackPanel>
-        <Button Grid.Column="1"
-                Grid.Row="4"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Padding="15,2"
-                x:Name="btnGrayscale"
-                Click="BtnGrayscale_Click">
-            Grayscale
-        </Button>
-        <StackPanel
-                Grid.Column="1"
-                Grid.Row="5"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-            <Button
-                Padding="15,2"
-                x:Name="btnThreshold"
-                Click="BtnThreshold_Click">
-                Threshold
-            </Button>
-            <ComboBox
-                x:Name="ThresholdComboBox"
-                Width="120">
-                <ComboBoxItem IsSelected="True">2</ComboBoxItem>
-                <ComboBoxItem>3</ComboBoxItem>
-                <ComboBoxItem>4</ComboBoxItem>
-            </ComboBox>
-        </StackPanel>
-        <StackPanel
-            Grid.Column="1"
-            Grid.Row="6"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-            <Button
-                    Padding="15,2"
-                    x:Name="btnUndo"
-                    Click="BtnUndo_Click">
-                Undo
-            </Button>
-            <Label
-                x:Name="UndoLeftLabel"
-                Content="0"/>
-        </StackPanel>
-        <Button
-            x:Name="OpenFileButton"
-            Content="..."
-            Grid.Column="1"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Margin="120,0,0,0"
-            Click="OpenFileButton_Click"/>
-    </Grid>
+        <!--</Grid>-->
+    </DockPanel>
 </Window>
