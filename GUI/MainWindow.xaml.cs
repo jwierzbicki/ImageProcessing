@@ -52,7 +52,7 @@ namespace GUI
             Marshal.Copy(newImage.Bytes, newImage.DataOffset, tempArray, newImage.DataLength);
 
             // Do C/C++ operation
-            RemoveColorFromImage(tempArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel, (int)color);
+            NativeMethods.RemoveColorFromImage(tempArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel, (int)color);
 
             // Copy back
             Marshal.Copy(tempArray, newImage.Bytes, newImage.DataOffset, newImage.DataLength);
@@ -104,10 +104,10 @@ namespace GUI
             Marshal.Copy(newImage.Bytes, newImage.DataOffset, inputArray, newImage.DataLength);
             Marshal.Copy(kernel, 0, mask, kernel.Length);
             // Clear output array
-            RtlZeroMemory(outputArray, new UIntPtr((uint)newImage.DataLength));
+            NativeMethods.RtlZeroMemory(outputArray, new UIntPtr((uint)newImage.DataLength));
 
             // Do C/C++ operation
-            FilterImage(inputArray, outputArray, mask, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel);
+            NativeMethods.FilterImage(inputArray, outputArray, mask, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel);
 
             // Copy back
             Marshal.Copy(outputArray, newImage.Bytes, newImage.DataOffset, newImage.DataLength);
@@ -136,10 +136,10 @@ namespace GUI
             // Copy input data
             Marshal.Copy(newImage.Bytes, newImage.DataOffset, inputArray, newImage.DataLength);
             // Clear output array
-            RtlZeroMemory(outputArray, new UIntPtr((uint)newImage.DataLength));
+            NativeMethods.RtlZeroMemory(outputArray, new UIntPtr((uint)newImage.DataLength));
 
             // Do C/C++ operation
-            ConvertImageToGrayscale(inputArray, outputArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel);
+            NativeMethods.ConvertImageToGrayscale(inputArray, outputArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel);
 
             // Copy back
             Marshal.Copy(outputArray, newImage.Bytes, newImage.DataOffset, newImage.DataLength);
@@ -167,11 +167,11 @@ namespace GUI
             // Copy input data
             Marshal.Copy(newImage.Bytes, newImage.DataOffset, inputArray, newImage.DataLength);
             // Clear output array
-            RtlZeroMemory(outputArray, new UIntPtr((uint)newImage.DataLength));
+            NativeMethods.RtlZeroMemory(outputArray, new UIntPtr((uint)newImage.DataLength));
 
             // Do C/C++ operation
             int parts = int.Parse(((ComboBoxItem)ThresholdComboBox.SelectedItem).Content.ToString());
-            ThresholdImage(inputArray, outputArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel, parts);
+            NativeMethods.ThresholdImage(inputArray, outputArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel, parts);
 
             // Copy back
             Marshal.Copy(outputArray, newImage.Bytes, newImage.DataOffset, newImage.DataLength);
@@ -215,26 +215,12 @@ namespace GUI
             string fileName = dlg.FileName;
 
             var image = new MyImage();
-            image.Bitmap = Converters.ConvertTo24bpp(new Bitmap(System.Drawing.Image.FromFile(fileName)));
+            Bitmap bmp = new Bitmap(System.Drawing.Image.FromFile(fileName));
+            image.Bitmap = Converters.ConvertTo24bpp(bmp);
             image.Bytes = Converters.BitmapToByteArray(image.Bitmap);
             Images.Clear();
             Images.Add(image);
             MainImage.Source = Converters.BitmapToBitmapSource(image.Bitmap);
         }
-
-        [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
-        private extern static void RemoveColorFromImage(IntPtr imageData, int length, int imageHeight, int imageWidth, int bytesPerPixel, int color);
-
-        [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
-        private extern static void FilterImage(IntPtr inputImage, IntPtr outputImage, IntPtr mask, int length, int imageHeight, int imageWidth, int bytesPerPixel);
-
-        [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
-        private extern static void ConvertImageToGrayscale(IntPtr inputImage, IntPtr outputGrayscale, int length, int imageHeight, int imageWidth, int bytesPerPixel);
-
-        [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
-        private extern static void ThresholdImage(IntPtr inputImage, IntPtr outputGrayscale, int length, int imageHeight, int imageWidth, int bytesPerPixel, int parts = 2);
-
-        [DllImport("kernel32.dll")]
-        static extern void RtlZeroMemory(IntPtr dst, UIntPtr length);
     }
 }

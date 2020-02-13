@@ -116,7 +116,7 @@ namespace GUI
             }
             finally
             {
-                DeleteObject(hBitmap);
+                NativeMethods.DeleteObject(hBitmap);
             }
         }
 
@@ -147,8 +147,5 @@ namespace GUI
             Marshal.Copy(img.Bytes, 0, pNative, img.Bytes.Length);
             img.Bitmap.UnlockBits(bmData);
         }
-
-        [DllImport("gdi32.dll")]
-        private static extern bool DeleteObject(IntPtr hObject);
     }
 }
