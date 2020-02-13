@@ -54,7 +54,7 @@ __global__ void setRed(Pixel *x, int n)
 	}
 }
 
-__global__ void blurBlue(Pixel *input, Pixel *output, float *mask, int height, int width)
+__global__ void applyMaskBlue(Pixel *input, Pixel *output, float *mask, int height, int width)
 {
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -73,7 +73,7 @@ __global__ void blurBlue(Pixel *input, Pixel *output, float *mask, int height, i
 	output[row * width + col].Blue = sumBlue;
 }
 
-__global__ void blurGreen(Pixel *input, Pixel *output, float *mask, int height, int width)
+__global__ void applyMaskGreen(Pixel *input, Pixel *output, float *mask, int height, int width)
 {
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -92,7 +92,7 @@ __global__ void blurGreen(Pixel *input, Pixel *output, float *mask, int height, 
 	output[row * width + col].Green = sumGreen;
 }
 
-__global__ void blurRed(Pixel *input, Pixel *output, float *mask, int height, int width)
+__global__ void applyMaskRed(Pixel *input, Pixel *output, float *mask, int height, int width)
 {
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
@@ -264,7 +264,7 @@ extern "C" _declspec(dllexport) void __cdecl ConvertImageToGrayscale(uint8_t *in
 	delete[] outputArr;
 }
 
-extern "C" _declspec(dllexport) void __cdecl BlurImage(uint8_t *inputImage, uint8_t *outputImage, int length, int imageHeight, int imageWidth, int bytesPerPixel)
+extern "C" _declspec(dllexport) void __cdecl FilterImage(uint8_t *inputImage, uint8_t *outputImage, float *mask, int length, int imageHeight, int imageWidth, int bytesPerPixel)
 {
 	int pixelCount = length / bytesPerPixel;
 	Pixel *arr = new Pixel[pixelCount];
@@ -273,12 +273,6 @@ extern "C" _declspec(dllexport) void __cdecl BlurImage(uint8_t *inputImage, uint
 
 	// Parse byte array data into pixel array
 	ParseByteArrayToPixelArray(arr, inputImage, length, bytesPerPixel);
-
-	float mask[9] = {
-		1 / 9.0f, 1 / 9.0f, 1 / 9.0f,
-		1 / 9.0f, 1 / 9.0f, 1 / 9.0f,
-		1 / 9.0f, 1 / 9.0f, 1 / 9.0f
-	};
 
 	// Allocate device memory, copy array to device memory
 	Pixel *x, *y;
@@ -299,9 +293,9 @@ extern "C" _declspec(dllexport) void __cdecl BlurImage(uint8_t *inputImage, uint
 	dim3 dimGrid(gridDimX + 1, gridDimY + 1); // +1 to be safe everything is processed
 
 	// Call CUDA kernels
-	blurBlue<<<dimGrid, dimBlock>>>(x, y, maskArr, imageHeight, imageWidth);
-	blurGreen<<<dimGrid, dimBlock>>>(x, y, maskArr, imageHeight, imageWidth);
-	blurRed<<<dimGrid, dimBlock>>>(x, y, maskArr, imageHeight, imageWidth);
+	applyMaskBlue<<<dimGrid, dimBlock>>>(x, y, maskArr, imageHeight, imageWidth);
+	applyMaskGreen<<<dimGrid, dimBlock>>>(x, y, maskArr, imageHeight, imageWidth);
+	applyMaskRed<<<dimGrid, dimBlock>>>(x, y, maskArr, imageHeight, imageWidth);
 
 	// Copy calculated data back to host memory
 	cudaMemcpy(outputArr, y, pixelCount * sizeof(Pixel), cudaMemcpyDeviceToHost);

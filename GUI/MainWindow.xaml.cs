@@ -87,25 +87,34 @@ namespace GUI
 
         private void BtnBlur_Click(object sender, RoutedEventArgs e)
         {
+            float[] kernel = {
+                1 / 9.0f, 1 / 9.0f, 1 / 9.0f,
+                1 / 9.0f, 1 / 9.0f, 1 / 9.0f,
+                1 / 9.0f, 1 / 9.0f, 1 / 9.0f
+            };
+
             // Create new image
             var newImage = (MyImage)Images.Last().Clone();
 
             // Allocate memory via Marshal
             IntPtr inputArray = Marshal.AllocHGlobal(newImage.DataLength);
             IntPtr outputArray = Marshal.AllocHGlobal(newImage.DataLength);
+            IntPtr mask = Marshal.AllocHGlobal(kernel.Length * sizeof(float));
             // Copy input data
             Marshal.Copy(newImage.Bytes, newImage.DataOffset, inputArray, newImage.DataLength);
+            Marshal.Copy(kernel, 0, mask, kernel.Length);
             // Clear output array
             RtlZeroMemory(outputArray, new UIntPtr((uint)newImage.DataLength));
 
             // Do C/C++ operation
-            BlurImage(inputArray, outputArray, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel);
+            FilterImage(inputArray, outputArray, mask, newImage.DataLength, newImage.Height, newImage.Width, newImage.BytesPerPixel);
 
             // Copy back
             Marshal.Copy(outputArray, newImage.Bytes, newImage.DataOffset, newImage.DataLength);
             // Free memory
             Marshal.FreeHGlobal(inputArray);
             Marshal.FreeHGlobal(outputArray);
+            Marshal.FreeHGlobal(mask);
 
             newImage.Bitmap = Converters.ByteArrayToBitmap(newImage.Bytes);
 
@@ -217,7 +226,7 @@ namespace GUI
         private extern static void RemoveColorFromImage(IntPtr imageData, int length, int imageHeight, int imageWidth, int bytesPerPixel, int color);
 
         [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
-        private extern static void BlurImage(IntPtr inputImage, IntPtr outputImage, int length, int imageHeight, int imageWidth, int bytesPerPixel);
+        private extern static void FilterImage(IntPtr inputImage, IntPtr outputImage, IntPtr mask, int length, int imageHeight, int imageWidth, int bytesPerPixel);
 
         [DllImport(@"../../../../x64/Debug/ImageProcessing.dll", CallingConvention = CallingConvention.Cdecl)]
         private extern static void ConvertImageToGrayscale(IntPtr inputImage, IntPtr outputGrayscale, int length, int imageHeight, int imageWidth, int bytesPerPixel);
