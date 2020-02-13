@@ -59,7 +59,7 @@ __global__ void applyMaskBlue(Pixel *input, Pixel *output, float *mask, int heig
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-	int sumBlue = 0;
+	float sumBlue = 0;
 
 	for (int k = -1; k <= 1; k++)
 	{
@@ -78,7 +78,7 @@ __global__ void applyMaskGreen(Pixel *input, Pixel *output, float *mask, int hei
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-	int sumGreen = 0;
+	float sumGreen = 0;
 
 	for (int k = -1; k <= 1; k++)
 	{
@@ -97,7 +97,7 @@ __global__ void applyMaskRed(Pixel *input, Pixel *output, float *mask, int heigh
 	int row = blockIdx.y * blockDim.y + threadIdx.y;
 	int col = blockIdx.x * blockDim.x + threadIdx.x;
 
-	int sumRed = 0;
+	float sumRed = 0;
 
 	for (int k = -1; k <= 1; k++)
 	{
