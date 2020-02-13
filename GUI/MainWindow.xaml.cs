@@ -265,7 +265,7 @@ namespace GUI
             dict["GaussianBlur"] = new float[]
             {
                 1/16.0f, 1/8.0f, 1/16.0f,
-                1/8.0f, 1/2.0f, 1/8.0f,
+                1/8.0f, 1/4.0f, 1/8.0f,
                 1/16.0f, 1/8.0f, 1/16.0f
             };
 
