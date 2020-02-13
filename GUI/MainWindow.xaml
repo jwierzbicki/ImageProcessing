@@ -50,15 +50,28 @@
                 Click="BtnRemoveBlue_Click">
             Remove Blue
         </Button>
-        <Button Grid.Column="1"
+        <StackPanel
+                Grid.Column="1"
                 Grid.Row="3"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Center"
+                VerticalAlignment="Center">
+            <Button
                 Padding="15,2"
-                x:Name="btnBlur"
-                Click="BtnBlur_Click">
-            Blur
-        </Button>
+                x:Name="btnFilter"
+                Click="BtnFilter_Click">
+                Filter using kernel
+            </Button>
+            <ComboBox
+                x:Name="FilterComboBox"
+                Width="120">
+                <ComboBoxItem IsSelected="True">EdgeDetection1</ComboBoxItem>
+                <ComboBoxItem>EdgeDetection2</ComboBoxItem>
+                <ComboBoxItem>EdgeDetection3</ComboBoxItem>
+                <ComboBoxItem>Sharpen</ComboBoxItem>
+                <ComboBoxItem>BoxBlur</ComboBoxItem>
+                <ComboBoxItem>GaussianBlur</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
         <Button Grid.Column="1"
                 Grid.Row="4"
                 HorizontalAlignment="Center"

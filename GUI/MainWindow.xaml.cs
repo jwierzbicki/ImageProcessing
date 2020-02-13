@@ -22,6 +22,8 @@ namespace GUI
 
         public int UndoLeft { get; set; }
 
+        public Dictionary<string, float[]> FilterMasks { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -32,6 +34,8 @@ namespace GUI
         private void Initialize()
         {
             Images = new List<MyImage>();
+
+            FilterMasks = InitializeMasks();
 
             // Create first image
             var image = new MyImage();
@@ -85,13 +89,10 @@ namespace GUI
             UndoLeftLabel.Content = ++UndoLeft;
         }
 
-        private void BtnBlur_Click(object sender, RoutedEventArgs e)
+        private void BtnFilter_Click(object sender, RoutedEventArgs e)
         {
-            float[] kernel = {
-                1 / 9.0f, 1 / 9.0f, 1 / 9.0f,
-                1 / 9.0f, 1 / 9.0f, 1 / 9.0f,
-                1 / 9.0f, 1 / 9.0f, 1 / 9.0f
-            };
+            string kernelName = ((ComboBoxItem)FilterComboBox.SelectedItem).Content.ToString();
+            var kernel = FilterMasks[kernelName];
 
             // Create new image
             var newImage = (MyImage)Images.Last().Clone();
@@ -221,6 +222,54 @@ namespace GUI
             Images.Clear();
             Images.Add(image);
             MainImage.Source = Converters.BitmapToBitmapSource(image.Bitmap);
+        }
+
+        private static Dictionary<string, float[]> InitializeMasks()
+        {
+            var dict = new Dictionary<string, float[]>();
+
+            dict["EdgeDetection1"] = new float[]
+            {
+                1, 0, -1,
+                0, 0, 0,
+                -1, 0, 1
+            };
+
+            dict["EdgeDetection2"] = new float[]
+            {
+                0, 1, 0,
+                1, -4, 1,
+                0, 1, 0
+            };
+
+            dict["EdgeDetection3"] = new float[]
+            {
+                -1, -1, -1,
+                -1, 8, -1,
+                -1, -1, -1
+            };
+
+            dict["Sharpen"] = new float[]
+            {
+                0, -1, 0,
+                -1, 5, -1,
+                0, -1, 0
+            };
+
+            dict["BoxBlur"] = new float[] {
+                1/9.0f, 1/9.0f, 1/9.0f,
+                1/9.0f, 1/9.0f, 1/9.0f,
+                1/9.0f, 1/9.0f, 1/9.0f
+            };
+
+            dict["GaussianBlur"] = new float[]
+            {
+                1/16.0f, 1/8.0f, 1/16.0f,
+                1/8.0f, 1/2.0f, 1/8.0f,
+                1/16.0f, 1/8.0f, 1/16.0f
+            };
+
+            return dict;
         }
     }
 }
